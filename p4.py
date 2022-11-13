@@ -1,3 +1,6 @@
+import matplotlib.pyplot as plt
+import math
+
 # STRINGS
 string_GGA = "GGA"
 string_GLGSV = "GLGSV"
@@ -90,7 +93,7 @@ for line in lines:
 
         # PRN
         prn = splitted_line[4]
-        if prn in GL_satellites:
+        if prn in GL_satellites or prn == "":
             continue
         GL_satellites.append(prn)
 
@@ -109,7 +112,7 @@ for line in lines:
         # Other PRNs:
         try:
             prn = splitted_line[8]
-            if prn in GL_satellites:
+            if prn in GL_satellites or prn == "":
                 continue
             elevation = splitted_line[9]
             azimuth = splitted_line[10]
@@ -123,7 +126,7 @@ for line in lines:
 
         try:
             prn = splitted_line[12]
-            if prn in GL_satellites:
+            if prn in GL_satellites or prn == "":
                 continue
             elevation = splitted_line[13]
             azimuth = splitted_line[14]
@@ -137,7 +140,7 @@ for line in lines:
 
         try:
             prn = splitted_line[16]
-            if prn in GL_satellites:
+            if prn in GL_satellites or prn == "":
                 continue
             elevation = splitted_line[17]
             azimuth = splitted_line[18]
@@ -323,3 +326,33 @@ print("HDOP medio del grupo 1: ", final_HDOP_1)
 print("HDOP medio del grupo 2: ", final_HDOP_2)
 print("VDOP medio del grupo 1: ", final_VDOP_1)
 print("VDOP medio del grupo 2: ", final_VDOP_2)
+
+# Representación polar
+GP_azimuts_rad = []
+GL_azimuts_rad = []
+GP_elevations_rad = []
+GL_elevations_rad = []
+
+for angle in GP_azimuth:
+    GP_azimuts_rad.append(math.radians(float(angle)))
+
+for angle in GL_azimuth:
+    GL_azimuts_rad.append(math.radians(float(angle)))
+
+for angle in GP_elevations:
+    GP_elevations_rad.append((float(angle)))
+
+for angle in GL_elevations:
+    GL_elevations_rad.append((float(angle)))
+
+fig = plt.figure()
+ax = fig.add_subplot(projection="polar")
+ax.set_theta_zero_location("N")
+ax.set_xticklabels(["Norte", "NO", "Oeste", "SO", "Sur", "SE", "Este", "NE"])
+c = ax.scatter(GL_azimuts_rad, GL_elevations_rad, c=GL_azimuts_rad, s=100, cmap="hsv", alpha=1)
+
+for i in range(0, len(GL_azimuts_rad)):
+    plt.annotate(GL_satellites[i]+" ["+GL_snr[i][0:2]+"dB]", (GL_azimuts_rad[i], GL_elevations_rad[i]))
+
+plt.show()
+plt.title("GPGSV dentro")
